@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio 3D Interactivo</title>
+    
+    <!-- Hoja de Estilos -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Iconos (FontAwesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP para animaciones -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <!-- IMPORT MAP: Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Pantalla de Carga -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <p>Cargando Experiencia 3D...</p>
+    </div>
+
+    <!-- Botón Modo Oscuro/Claro -->
+    <div class="theme-toggle" id="theme-btn" title="Cambiar Tema">
+        <i class="fas fa-sun"></i>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instructions">
+        <p><i class="fas fa-mouse"></i> Click en pantallas para navegar</p>
+    </div>
+
+    <!-- Barra de Navegación (Flotante) -->
+    <div class="nav-bar">
+        <!-- Los IDs data-target deben coincidir con los nombres en tu 3D -->
+        <div class="nav-item" data-target="DisplayMonitor" title="Sobre Mí">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="nav-item" data-target="Displayipad" title="Proyectos">
+            <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="nav-item" data-target="Displaypared" title="Habilidades">
+            <i class="fas fa-code"></i>
+        </div>
+        <div class="nav-item" data-target="Displaytv" title="Contacto">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="nav-item" id="reset-view-btn" title="Vista General">
+            <i class="fas fa-home"></i>
+        </div>
+    </div>
+
+    <!-- CONTENIDO HTML (Se muestra al hacer zoom) -->
+    
+    <!-- Monitor: Sobre Mí -->
+    <div id="content-monitor" class="section-content">
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+        <h2>Sobre Mí</h2>
+        <p>Soy un desarrollador apasionado por crear experiencias web inmersivas.</p>
+        <p>Me encanta combinar la creatividad del diseño 3D con la lógica de la programación.</p>
+    </div>
+
+    <!-- iPad: Proyectos -->
+    <div id="content-ipad" class="section-content">
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+        <h2>Proyectos Destacados</h2>
+        <div class="grid-projects">
+            <div class="card"><h3>E-Commerce 3D</h3><p>Tienda interactiva.</p></div>
+            <div class="card"><h3>App Finanzas</h3><p>Dashboard en tiempo real.</p></div>
+        </div>
+    </div>
+
+    <!-- Pared: Habilidades -->
+    <div id="content-pared" class="section-content">
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+        <h2>Stack Tecnológico</h2>
+        <ul>
+            <li>JavaScript (ES6+)</li>
+            <li>Three.js / WebGL</li>
+            <li>HTML5 & CSS3</li>
+            <li>Blender</li>
+        </ul>
+    </div>
+
+    <!-- TV: Contacto -->
+    <div id="content-tv" class="section-content">
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+        <h2>Contáctame</h2>
+        <p>social@miportafolio.com</p>
+        <div class="social-icons">
+            <i class="fab fa-linkedin"></i>
+            <i class="fab fa-github"></i>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR THREE.JS -->
+    <div id="canvas-container"></div>
+
+    <!-- SCRIPTS -->
+    <!-- Script UI General -->
+    <script src="script.js"></script>
+    <!-- Script Three.js (Module) -->
+    <script type="module" src="three.js"></script>
+
+</body>
+</html>
