@@ -1,30 +1,45 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import ThreeMeshUI from 'three-mesh-ui';
+// IMPORTANTE: Importamos el renderizador CSS3D
+import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
-// --- CONFIGURACIÓN DE FUENTES ---
-const FONT_JSON = 'https://unpkg.com/three-mesh-ui/examples/assets/fonts/msdf/roboto/regular.json';
-const FONT_IMAGE = 'https://unpkg.com/three-mesh-ui/examples/assets/fonts/msdf/roboto/regular.png';
-
-// 1. CONFIGURACIÓN INICIAL
+// 1. CONFIGURACIÓN INICIAL DE ESCENA
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a1a);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(5, 5, 8);
 
+// 2. CONFIGURACIÓN DE RENDERIZADORES
+const container = document.getElementById('canvas-container');
+
+// A) Renderizador WebGL (Modelos 3D, luces, sombras)
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-document.getElementById('canvas-container').appendChild(renderer.domElement);
+// Posicionamiento absoluto para superponer
+renderer.domElement.style.position = 'absolute';
+renderer.domElement.style.top = 0;
+renderer.domElement.style.zIndex = 1; // Detrás del CSS para ver los objetos pero delante del fondo
+renderer.domElement.style.pointerEvents = 'none'; // Permitir clicks a través del canvas 3D hacia el CSS
+container.appendChild(renderer.domElement);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+// B) Renderizador CSS3D (Elementos HTML en pantallas)
+const cssRenderer = new CSS3DRenderer();
+cssRenderer.setSize(window.innerWidth, window.innerHeight);
+cssRenderer.domElement.style.position = 'absolute';
+cssRenderer.domElement.style.top = 0;
+cssRenderer.domElement.style.zIndex = 2; // Encima para recibir clicks
+container.appendChild(cssRenderer.domElement);
+
+// 3. CONTROLES (OrbitControls debe controlar el elemento superior, el CSS Renderer)
+const controls = new OrbitControls(camera, cssRenderer.domElement);
 controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 1.9;
 
-// 2. LUCES
+// 4. LUCES
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
@@ -33,248 +48,168 @@ dirLight.position.set(5, 10, 7);
 dirLight.castShadow = true;
 scene.add(dirLight);
 
-// 3. GESTIÓN DE OBJETOS
-let model, roomMesh;
-const clickableObjects = [];
+// 5. CONFIGURACIÓN DE PANTALLAS (TUS DATOS + HTML)
+// "pixelsPerUnit" define la calidad. 100px por cada 1 unidad de Three.js.
+// Si tu pared mide 14 unidades, tendrá 1400px de ancho en HTML.
+const PIXELS_PER_UNIT = 120; 
 
-// Configuración de tamaño para cada pantalla (ajusta estos valores según tu modelo)
 const screenConfig = {
     'DisplayMonitor': { 
-        title: "Sobre Mí", 
-        color: 0x00d2ff,
-        width: 5.9,   // Ajusta según el tamaño real en tu modelo
-        height: 2.3   // Ajusta según el tamaño real en tu modelo
+        width: 5.9,
+        height: 2.3,
+        cssClass: 'screen-monitor',
+        html: `
+            <div>
+                <h1>Hola, Soy Emmanuel</h1>
+                <p>Desarrollador <span class="highlight">Creative Frontend</span> & 3D Enthusiast</p>
+                <p style="font-size: 1rem; margin-top: 20px; opacity: 0.8;">(Click para acercar)</p>
+            </div>
+        `
     },
     'Displayipad': { 
-        title: "Proyectos", 
-        color: 0xff9900,
-        width: .5,
-        height: 0.7
+        width: 0.9, // Ajusté ligeramente para mejor proporción iPad
+        height: 1.2,
+        cssClass: 'screen-ipad',
+        html: `
+            <div style="width:100%; height:100%;">
+                <h2>Proyectos</h2>
+                <div class="project-grid">
+                    <div class="project-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Shop 3D</h3>
+                        <p>React + Three.js</p>
+                    </div>
+                    <div class="project-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Finance</h3>
+                        <p>D3.js Dashboard</p>
+                    </div>
+                </div>
+            </div>
+        `
     },
     'Displaypared': { 
-        title: "Habilidades", 
-        color: 0x00ff88,
         width: 14.1,
-        height: 8.6
+        height: 8.6,
+        cssClass: 'screen-pared',
+        html: `
+            <div style="width:100%;">
+                <h2>Habilidades Técnicas</h2>
+                <div class="skills-container">
+                    <div class="skill-badge"><i class="fab fa-js"></i> JavaScript</div>
+                    <div class="skill-badge"><i class="fas fa-cube"></i> Three.js</div>
+                    <div class="skill-badge"><i class="fab fa-react"></i> React</div>
+                    <div class="skill-badge"><i class="fas fa-shapes"></i> Blender</div>
+                    <div class="skill-badge"><i class="fab fa-html5"></i> HTML5/CSS3</div>
+                    <div class="skill-badge"><i class="fas fa-server"></i> Node.js</div>
+                </div>
+            </div>
+        `
     },
+
     'Displaytv': { 
-        title: "Contacto", 
-        color: 0xff3366,
-        width: 3.4,
-        height: 7.7
-    }
+    // INTERCAMBIADAS: ahora width es el lado largo (7.7) y height el corto (3.4)
+    width: 3.4,   // ← Era height
+    height: 7.7,  // ← Era width
+    cssClass: 'screen-tv',
+    html: `
+        <div>
+            <h2>CONTACTO</h2>
+            <div class="contact-info">emmdev@code.com</div>
+            <div class="socials">
+                <i class="fab fa-linkedin"></i>
+                <i class="fab fa-github"></i>
+                <i class="fab fa-twitter"></i>
+            </div>
+        </div>
+    `
+}
 };
 
-// Contenido para cada pantalla
-const screenContent = {
-    'DisplayMonitor': { 
-        buildUI: (container) => {
-            container.add(
-                new ThreeMeshUI.Text({
-                    content: "Desarrollador Creativo\n\n",
-                    fontSize: 0.08
-                }),
-                new ThreeMeshUI.Text({
-                    content: "Me especializo en crear experiencias web inmersivas, combinando diseño 3D y lógica de programación.",
-                    fontSize: 0.045
-                })
-            );
-        }
-    },
-    'Displayipad': { 
-        buildUI: (container) => {
-            const row = new ThreeMeshUI.Block({
-                width: 0.9,
-                height: 0.5,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                backgroundOpacity: 0
-            });
-            
-            const p1 = new ThreeMeshUI.Block({ 
-                width: 0.4, 
-                height: 0.4, 
-                backgroundColor: new THREE.Color(0x333333),
-                backgroundOpacity: 0.7,
-                padding: 0.02,
-                borderRadius: 0.02
-            });
-            p1.add(
-                new ThreeMeshUI.Text({ content: "E-Commerce 3D\n", fontSize: 0.04 }),
-                new ThreeMeshUI.Text({ content: "Tienda interactiva", fontSize: 0.025 })
-            );
-            
-            const p2 = new ThreeMeshUI.Block({ 
-                width: 0.4, 
-                height: 0.4, 
-                backgroundColor: new THREE.Color(0x333333),
-                backgroundOpacity: 0.7,
-                padding: 0.02,
-                borderRadius: 0.02
-            });
-            p2.add(
-                new ThreeMeshUI.Text({ content: "App Finanzas\n", fontSize: 0.04 }),
-                new ThreeMeshUI.Text({ content: "Dashboard Realtime", fontSize: 0.025 })
-            );
+// 6. GESTIÓN DE OBJETOS Y CARGA
+let model, roomMesh;
+const clickableObjects = []; // Guardamos referencias para mover la cámara
 
-            row.add(p1, p2);
-            container.add(row);
-        }
-    },
-    'Displaypared': { 
-        buildUI: (container) => {
-            const skills = ["JavaScript (ES6+)", "Three.js / WebGL", "HTML5 & CSS3", "Blender 3D", "React / Vue.js", "Node.js"];
-            
-            skills.forEach(skill => {
-                const item = new ThreeMeshUI.Block({
-                    width: 0.9,
-                    height: 0.08,
-                    margin: 0.01,
-                    backgroundColor: new THREE.Color(0xffffff),
-                    backgroundOpacity: 0.1,
-                    justifyContent: 'center',
-                    borderRadius: 0.02
-                });
-                item.add(new ThreeMeshUI.Text({ 
-                    content: skill, 
-                    fontSize: 0.035,
-                    fontColor: new THREE.Color(0xffffff)
-                }));
-                container.add(item);
-            });
-        }
-    },
-    'Displaytv': { 
-        buildUI: (container) => {
-            container.add(
-                new ThreeMeshUI.Text({ 
-                    content: "¡Hablemos!\n\n", 
-                    fontSize: 0.1,
-                    fontColor: new THREE.Color(0xff3366)
-                }),
-                new ThreeMeshUI.Text({ 
-                    content: "social@miportafolio.com\n", 
-                    fontSize: 0.06 
-                }),
-                new ThreeMeshUI.Text({ 
-                    content: "Disponible para freelance", 
-                    fontSize: 0.04 
-                })
-            );
-        }
-    }
-};
-
-// 4. FUNCIÓN MEJORADA PARA CREAR UI
-function createScreenUI(mesh, key) {
-    const config = screenConfig[key];
-    const content = screenContent[key];
+function createCSSObject(config, position, quaternion, parentName) {
+    // A. Crear el elemento DOM
+    const div = document.createElement('div');
+    div.className = `screen-base ${config.cssClass}`;
+    div.innerHTML = config.html;
     
-    if (!config || !content) {
-        console.warn(`No config found for: ${key}`);
-        return;
-    }
-
-    // Usar dimensiones configuradas
-    const width = config.width;
-    const height = config.height;
-
-    // Crear contenedor principal
-    const container = new ThreeMeshUI.Block({
-        width: width,
-        height: height,
-        padding: 0.05,
-        fontFamily: FONT_JSON,
-        fontTexture: FONT_IMAGE,
-        backgroundColor: new THREE.Color(0x000000),
-        backgroundOpacity: 0.9,
-        justifyContent: 'start',
-        borderRadius: 0.03,
-        textAlign: 'center'
-    });
-
-    // Agregar al mesh y posicionar
-    mesh.add(container);
+    // B. Calcular tamaño en píxeles basado en la configuración y densidad
+    const pixelWidth = config.width * PIXELS_PER_UNIT;
+    const pixelHeight = config.height * PIXELS_PER_UNIT;
     
-    // Posicionar ligeramente hacia adelante para que se vea sobre la pantalla
-    container.position.set(0, 0, 0.02);
-
-    // Header
-    const header = new ThreeMeshUI.Block({
-        width: '100%',
-        height: 0.15,
-        justifyContent: 'center',
-        backgroundOpacity: 0,
-        margin: 0.02
-    });
+    div.style.width = `${pixelWidth}px`;
+    div.style.height = `${pixelHeight}px`;
     
-    header.add(
-        new ThreeMeshUI.Text({
-            content: config.title,
-            fontSize: 0.08,
-            fontColor: new THREE.Color(config.color)
-        })
-    );
-    container.add(header);
-
-    // Línea decorativa
-    const line = new ThreeMeshUI.Block({
-        width: '90%',
-        height: 0.005,
-        backgroundColor: new THREE.Color(config.color),
-        backgroundOpacity: 0.7,
-        margin: 0.02
+    // C. Crear el objeto CSS3D
+    const cssObj = new CSS3DObject(div);
+    
+    // D. Posición y Rotación (Copiadas del Empty de Blender)
+    cssObj.position.copy(position);
+    cssObj.quaternion.copy(quaternion);
+    
+    // E. Escala (Inversa a la densidad para que coincida con el tamaño 3D)
+    // Matemáticamente: si el div es 100 veces más grande (por PIXELS_PER_UNIT),
+    // reducimos la escala 100 veces.
+    const scaleFactor = 1 / PIXELS_PER_UNIT;
+    cssObj.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    
+    // F. Interactividad (Click en el HTML mueve la cámara)
+    // Agregamos el listener directamente al DOM, ya que el Raycaster no detecta CSS
+    div.addEventListener('pointerdown', (e) => {
+        // Detener propagación para que no interfiera con orbit controls si no es necesario
+        // e.stopPropagation(); 
+        moveToObject(cssObj, config.width); // Pasamos el objeto y su ancho para calcular zoom
     });
-    container.add(line);
 
-    // Contenido principal
-    const contentBody = new ThreeMeshUI.Block({
-        width: '100%',
-        height: 0.7,
-        justifyContent: 'center',
-        backgroundOpacity: 0,
-        padding: 0.02
-    });
-    container.add(contentBody);
+    // Guardamos referencia para la navbar externa
+    cssObj.name = parentName; // Ej: "DisplayMonitor"
+    clickableObjects.push(cssObj);
 
-    // Construir contenido específico
-    content.buildUI(contentBody);
+    return cssObj;
 }
 
-// 5. CARGAR MODELO
 const loader = new GLTFLoader();
 loader.load('assets/Portafolio2.glb', (gltf) => {
     model = gltf.scene;
     
     model.traverse((child) => {
-        if (child.isMesh || child.type === "Object3D") {
+        if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
-
-            // Identificar Room
             if (child.name.includes('room') || child.name === 'room') {
                 roomMesh = child;
-                child.material = child.material.clone(); 
             }
+        }
 
-            // Mapeo de empties a pantallas
-            const emptyToKey = {
-                "monitor-empty": "DisplayMonitor",
-                "ipad-empty": "Displayipad", 
-                "pared-empty": "Displaypared",
-                "tv-empty": "Displaytv"
-            };
+        // Mapeo de empties
+        const emptyToKey = {
+            "monitor-empty": "DisplayMonitor",
+            "ipad-empty": "Displayipad", 
+            "pared-empty": "Displaypared",
+            "tv-empty": "Displaytv"
+        };
 
-            // Crear UI para empties
-            for (const emptyName in emptyToKey) {
-                if (child.name === emptyName || child.name.includes(emptyName)) {
-                    const key = emptyToKey[emptyName];
-                    clickableObjects.push(child);
+        // Verificar si es uno de nuestros empties
+        for (const [emptyName, configKey] of Object.entries(emptyToKey)) {
+            if (child.name === emptyName || child.name.includes(emptyName)) {
+                const config = screenConfig[configKey];
+                if (config) {
+                    // Crear la pantalla CSS3D en la posición del empty
+                    const cssScreen = createCSSObject(
+                        config, 
+                        child.position, 
+                        child.quaternion,
+                        configKey // Pasamos la clave como nombre (DisplayMonitor)
+                    );
                     
-                    // Pequeño delay para asegurar que el mesh esté listo
-                    setTimeout(() => {
-                        createScreenUI(child, key);
-                    }, 100);
+                    // Añadimos a la escena
+                    scene.add(cssScreen);
+                    
+                    // Opcional: Ocultar el empty original si tenía geometría (visibilidad)
+                    child.visible = false; 
                 }
             }
         }
@@ -296,39 +231,16 @@ loader.load('assets/Portafolio2.glb', (gltf) => {
     console.error("Error cargando GLB:", error);
 });
 
-// 6. INTERACCIÓN MEJORADA
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
 
-window.addEventListener('click', (event) => {
-    if (event.target.closest('.nav-bar')) return;
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(clickableObjects, true);
-
-    if (intersects.length > 0) {
-        let targetObj = intersects[0].object;
-        
-        // Subir en la jerarquía hasta encontrar el objeto clickeable original
-        while (targetObj && !clickableObjects.includes(targetObj) && targetObj.parent) {
-            targetObj = targetObj.parent;
-        }
-
-        if (targetObj && clickableObjects.includes(targetObj)) {
-            moveToObject(targetObj);
-        }
-    }
-});
-
-function moveToObject(mesh) {
+// 7. LÓGICA DE MOVIMIENTO DE CÁMARA
+function moveToObject(object, objectWidth = 2) {
     const targetPos = new THREE.Vector3();
-    mesh.getWorldPosition(targetPos);
+    // Obtener posición mundial (útil si estuviera agrupado, aunque aquí están en root)
+    object.getWorldPosition(targetPos);
     
-    const offset = new THREE.Vector3(0, 0, 2.5);
-    offset.applyQuaternion(mesh.getWorldQuaternion(new THREE.Quaternion()));
+    const offset = new THREE.Vector3(0, 0, Math.max(2, objectWidth * 0.8)); // Distancia dinámica según tamaño
+    offset.applyQuaternion(object.getWorldQuaternion(new THREE.Quaternion()));
+    
     const camPos = targetPos.clone().add(offset);
 
     gsap.to(camera.position, {
@@ -355,7 +267,28 @@ function resetCamera() {
     });
 }
 
-// 7. EVENT LISTENERS
+// 8. EVENTOS EXTERNOS
+window.addEventListener('navigateToSection', (e) => {
+    const targetName = e.detail.target;
+    // Buscamos en nuestros objetos CSS creados
+    const targetObj = clickableObjects.find(obj => obj.name === targetName);
+    
+    if(targetObj) {
+        // Necesitamos el ancho para calcular el zoom, lo sacamos del config
+        const width = screenConfig[targetName]?.width || 2;
+        moveToObject(targetObj, width);
+    }
+});
+
+window.addEventListener('resetViewRequest', resetCamera);
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    cssRenderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 window.addEventListener('themeChanged', (e) => {
     const isLight = e.detail.isLightMode;
     const bgColor = isLight ? 0xf0f0f0 : 0x1a1a1a;
@@ -371,28 +304,13 @@ window.addEventListener('themeChanged', (e) => {
     }
 });
 
-window.addEventListener('navigateToSection', (e) => {
-    const targetName = e.detail.target;
-    const targetMesh = clickableObjects.find(obj => 
-        obj.name && obj.name.toLowerCase().includes(targetName.toLowerCase())
-    );
-    if(targetMesh) moveToObject(targetMesh);
-});
-
-window.addEventListener('resetViewRequest', resetCamera);
-
-// 8. LOOP PRINCIPAL
+// 9. LOOP PRINCIPAL
 function animate() {
     requestAnimationFrame(animate);
-    
-    ThreeMeshUI.update();
     controls.update();
+    
+    // Renderizamos ambas capas
     renderer.render(scene, camera);
+    cssRenderer.render(scene, camera);
 }
 animate();
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});

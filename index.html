@@ -14,13 +14,12 @@
     <!-- GSAP para animaciones -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
-    <!-- IMPORT MAP: Three.js -->
+    <!-- IMPORT MAP: Three.js + CSS3DRenderer -->
     <script type="importmap">
         {
             "imports": {
                 "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-                "three-mesh-ui": "https://cdn.jsdelivr.net/npm/three-mesh-ui@6.5.4/build/three-mesh-ui.module.js"
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
             }
         }
     </script>
@@ -45,7 +44,7 @@
 
     <!-- Barra de Navegación (Flotante) -->
     <div class="nav-bar">
-        <!-- Los IDs data-target deben coincidir con los nombres en tu 3D -->
+        <!-- Los IDs data-target coinciden con las claves en three.js -->
         <div class="nav-item" data-target="DisplayMonitor" title="Sobre Mí">
             <i class="fas fa-user"></i>
         </div>
@@ -63,56 +62,16 @@
         </div>
     </div>
 
-    <!-- CONTENIDO HTML (Se muestra al hacer zoom) -->
-    
-    <!-- Monitor: Sobre Mí -->
-    <div id="content-monitor" class="section-content">
-        <button class="close-btn"><i class="fas fa-times"></i></button>
-        <h2>Sobre Mí</h2>
-        <p>Soy un desarrollador apasionado por crear experiencias web inmersivas.</p>
-        <p>Me encanta combinar la creatividad del diseño 3D con la lógica de la programación.</p>
-    </div>
-
-    <!-- iPad: Proyectos -->
-    <div id="content-ipad" class="section-content">
-        <button class="close-btn"><i class="fas fa-times"></i></button>
-        <h2>Proyectos Destacados</h2>
-        <div class="grid-projects">
-            <div class="card"><h3>E-Commerce 3D</h3><p>Tienda interactiva.</p></div>
-            <div class="card"><h3>App Finanzas</h3><p>Dashboard en tiempo real.</p></div>
-        </div>
-    </div>
-
-    <!-- Pared: Habilidades -->
-    <div id="content-pared" class="section-content">
-        <button class="close-btn"><i class="fas fa-times"></i></button>
-        <h2>Stack Tecnológico</h2>
-        <ul>
-            <li>JavaScript (ES6+)</li>
-            <li>Three.js / WebGL</li>
-            <li>HTML5 & CSS3</li>
-            <li>Blender</li>
-        </ul>
-    </div>
-
-    <!-- TV: Contacto -->
-    <div id="content-tv" class="section-content">
-        <button class="close-btn"><i class="fas fa-times"></i></button>
-        <h2>Contáctame</h2>
-        <p>social@miportafolio.com</p>
-        <div class="social-icons">
-            <i class="fab fa-linkedin"></i>
-            <i class="fab fa-github"></i>
-        </div>
-    </div>
+    <!-- NOTA: Ya no necesitamos los divs ocultos "content-monitor", etc. 
+         El contenido ahora se genera dinámicamente en JS y se inyecta en el mundo 3D. 
+         Si quieres ventanas modales 2D adicionales, puedes dejarlos, pero para este 
+         ejemplo, el contenido vive DENTRO de las pantallas 3D. -->
 
     <!-- CONTENEDOR THREE.JS -->
     <div id="canvas-container"></div>
 
     <!-- SCRIPTS -->
-    <!-- Script UI General -->
     <script src="script.js"></script>
-    <!-- Script Three.js (Module) -->
     <script type="module" src="three.js"></script>
 
 </body>
