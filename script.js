@@ -61,3 +61,4 @@ window.showHtmlContent = (contentId) => {
 window.hideHtmlContent = () => {
     document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
 };
+

@@ -119,6 +119,7 @@ body.light-mode {
     /* Sombras internas para dar sensación de pantalla */
     box-shadow: inset 0 0 50px rgba(0,0,0,0.5); 
     user-select: none; /* Evita selección de texto accidental al rotar */
+    pointer-events: auto; /* Asegura que reciba eventos */
 }
 
 .screen-base:hover {
@@ -134,30 +135,24 @@ body.light-mode {
     align-items: center;
     text-align: center;
 }
-.screen-monitor h1 { font-size: 3em; color: #00d2ff; margin-bottom: 0.2em; text-transform: uppercase; letter-spacing: 2px; }
-.screen-monitor p { font-size: 1.5em; max-width: 80%; line-height: 1.4; color: #ccc; }
-.screen-monitor .highlight { color: #fff; font-weight: bold; }
 
-/* 2. IPAD (Proyectos) */
-.screen-ipad {
-    background: #111;
-    color: white;
+.screen-monitor h1 {  
+    color: #00d2ff; 
+    margin-bottom: 0.2em; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
 }
-.screen-ipad h2 { font-size: 2em; color: #ff9900; margin-bottom: 15px; border-bottom: 2px solid #ff9900; padding-bottom: 10px;}
-.project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 100%; }
-.project-card { 
-    background: rgba(255,255,255,0.1); 
-    border-radius: 10px; 
-    padding: 15px; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+
+.screen-monitor p { 
+    line-height: 1.4; 
+    color: #ccc; 
 }
-.project-card i { font-size: 2em; margin-bottom: 10px; color: #ff9900; }
-.project-card h3 { font-size: 1.2em; margin-bottom: 5px; }
-.project-card p { font-size: 0.8em; color: #aaa; }
+.screen-monitor .highlight { font-weight: bold; 
+}
+
+
+
+
 
 /* 3. PARED (Habilidades) - Estilo tipo "Dashboard Futurista" */
 .screen-pared {
@@ -180,7 +175,91 @@ body.light-mode {
     box-shadow: 0 0 15px rgba(0,255,136,0.2);
 }
 
-/* TV (Contacto) - Pantalla horizontal con contenido rotado */
+/* 2. IPAD (Proyectos) */
+.screen-ipad {
+    background: #111;
+    color: white;
+    border-radius: 29px;
+}
+
+.screen-ipad .ipad-content {
+    /* Rotamos 90 grados en sentido horario para corregir la orientación */
+    transform: rotate(-180deg) rotateY(-180deg) scale(0.5) ; 
+    /* Ajustamos el origen de la transformación */
+    transform-origin: center center; /* Mantenemos el centro para que la rotación sea simétrica */
+    /* Aseguramos que el contenido esté centrado después de la rotación */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+/* Ajustamos el título "Proyectos" para que se vea correctamente después de la rotación */
+.screen-ipad h2 {
+    font-size: 2em;
+    color: #ff9900;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ff9900;
+    padding-bottom: 10px;
+    /* Aplicamos una rotación inversa para que el título se vea correctamente */
+    transform: rotate(-180deg) rotateY(-180deg);
+    /* Ajustamos el origen de la transformación para que el título esté centrado */
+    transform-origin: center center;
+    /* Aseguramos que el título esté centrado horizontalmente */
+    text-align: center;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    height: 100%;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    height: 100%;
+}
+
+.project-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 65px; /* <-- Aumentamos el padding de 15px a 25px */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* Asegura que el contenido interno (el enlace) ocupe todo el espacio */
+    overflow: hidden;
+}
+
+.project-card i { font-size: 2.5em; margin-bottom: 10px; color: #ff9900; }
+.project-card h3 { font-size: 1em; margin-bottom: 5px; }
+
+
+/* --- AÑADIR ESTAS NUEVAS REGLAS AQUÍ --- */
+.screen-ipad .project-link {
+    color: inherit; /* Hereda el color del texto del padre */
+    text-decoration: none; /* Quita el subrayado */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    /* Opcional: Añadir hover effect */
+    transition: transform 0.2s;
+}
+
+.screen-ipad .project-link:hover {
+    transform: scale(1.05); /* Agranda ligeramente al hacer hover */
+}
+
+/* TV (Contacto)*/
 .screen-tv {
     background-color: #000;
     background-image: radial-gradient(circle at center, #330011 0%, #000 100%);
@@ -194,31 +273,83 @@ body.light-mode {
     width: 100%;
     height: 100%;
     gap: 30px;
-    
-    /* Rotamos TODO el contenido para que se vea vertical */
-    transform: rotate(-90deg);
+    pointer-events: auto;
 }
 
-.screen-tv h2 { 
+/* Rotamos solo el contenido interno */
+.screen-tv .tv-content {
+    transform: rotate(-90deg); /* <-- Elimina esta línea */
+    transform-origin: center center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    pointer-events: auto;
+}
+
+/* Separar el título de los iconos o formulario */
+.screen-tv h2 {
     font-size: 3.5em;
-    font-family: 'Courier New', monospace; 
+    font-family: 'Courier New', monospace;
     border-bottom: 4px solid #ff3366;
     padding-bottom: 10px;
     margin: 0;
+    margin-bottom: 40px; /* Separar del siguiente elemento */
+    pointer-events: none;
 }
 
-.screen-tv .contact-info { 
-    font-size: 2em; 
-    color: white; 
-    margin: 0;
-    font-weight: bold;
-    word-break: break-word;
+/* Estilo del icono de GitHub */
+.screen-tv .social-icon {
+    display: inline-block;
+    font-size: 4em;
+    color: #ff3366;
+    transition: color 0.3s, transform 0.3s;
+    margin-bottom: 40px;
+    pointer-events: auto;
 }
 
-.screen-tv .socials { 
-    display: flex; 
-    flex-direction: row;
-    gap: 40px; 
-    font-size: 3em; 
-    justify-content: center;
+.screen-tv .social-icon:hover {
+    color: #ff99cc;
+    transform: scale(1.1);
+}
+
+/* Opcional: Estilo del formulario */
+.screen-tv .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 80%;
+    max-width: 400px;
+    margin-top: 20px;
+    pointer-events: auto;
+}
+
+.screen-tv .contact-form input,
+.screen-tv .contact-form textarea {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ff3366;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 4px;
+    pointer-events: auto;
+}
+
+.screen-tv .contact-form button {
+    padding: 10px;
+    font-size: 1em;
+    background-color: #ff3366;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    pointer-events: auto;
+}
+
+.screen-tv .contact-form button:hover {
+    background-color: #ff6699;
 }

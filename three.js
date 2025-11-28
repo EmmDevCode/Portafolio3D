@@ -32,6 +32,7 @@ cssRenderer.setSize(window.innerWidth, window.innerHeight);
 cssRenderer.domElement.style.position = 'absolute';
 cssRenderer.domElement.style.top = 0;
 cssRenderer.domElement.style.zIndex = 2; // Encima para recibir clicks
+cssRenderer.domElement.style.pointerEvents = 'all';
 container.appendChild(cssRenderer.domElement);
 
 // 3. CONTROLES (OrbitControls debe controlar el elemento superior, el CSS Renderer)
@@ -53,41 +54,56 @@ scene.add(dirLight);
 // Si tu pared mide 14 unidades, tendrá 1400px de ancho en HTML.
 const PIXELS_PER_UNIT = 120; 
 
+
 const screenConfig = {
     'DisplayMonitor': { 
         width: 5.9,
         height: 2.3,
         cssClass: 'screen-monitor',
         html: `
-            <div>
-                <h1>Hola, Soy Emmanuel</h1>
-                <p>Desarrollador <span class="highlight">Creative Frontend</span> & 3D Enthusiast</p>
-                <p style="font-size: 1rem; margin-top: 20px; opacity: 0.8;">(Click para acercar)</p>
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; padding: 10px;">
+                <img src="assets/perfil.png" alt="Foto de Emmanuel" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid #00d2ff;">
+                <!-- Contenedor para la animación typewriter -->
+                <div id="typewriter-container" style="font-size: 2em; color: #00d2ff; margin-bottom: 0.1em; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold;">
+                    Hi, I AM <span id="typewriter-text">EMMANUEL</span>
+                </div>
+                <p style="font-size: 1em; margin-top: 10px; max-width: 85%; line-height: 1.3; color: #ccc;">
+                    I'm a systems engineering student, I love everything about technology, I know a little bit about everything
+                </p>
             </div>
         `
     },
-    'Displayipad': { 
-        width: 0.9, // Ajusté ligeramente para mejor proporción iPad
-        height: 1.2,
+
+        'Displayipad': { 
+        width: 1.5,
+        height: 2,
         cssClass: 'screen-ipad',
         html: `
             <div style="width:100%; height:100%;">
                 <h2>Proyectos</h2>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <i class="fas fa-shopping-cart"></i>
-                        <h3>Shop 3D</h3>
-                        <p>React + Three.js</p>
-                    </div>
-                    <div class="project-card">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>Finance</h3>
-                        <p>D3.js Dashboard</p>
+                <!-- Envolver el grid en un div con clase para aplicar transform -->
+                <div class="ipad-content">
+                    <div class="project-grid">
+                        <div class="project-card">
+                            <a href="https://github.com/EmmDevCode/Login_bear_project" target="_blank" class="project-link">
+                                <!-- Icono de Login (llave) -->
+                                <i class="fas fa-key"></i>
+                                <h3>Login bear with Rive</h3>
+                            </a>
+                        </div>
+                        <div class="project-card">
+                            <a href="https://github.com/EmmDevCode/RATING_BEAR" target="_blank" class="project-link">
+                                <!-- Icono de Estrella -->
+                                <i class="fas fa-star"></i>
+                                <h3>Rating bear</h3>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         `
     },
+    
     'Displaypared': { 
         width: 14.1,
         height: 8.6,
@@ -108,23 +124,26 @@ const screenConfig = {
     },
 
     'Displaytv': { 
-    // INTERCAMBIADAS: ahora width es el lado largo (7.7) y height el corto (3.4)
-    width: 3.4,   // ← Era height
-    height: 7.7,  // ← Era width
+    width: 3.4,   // Ancho real de la pantalla en 3D
+    height: 7.7,  // Alto real de la pantalla en 3D
     cssClass: 'screen-tv',
     html: `
-        <div>
-            <h2>CONTACTO</h2>
-            <div class="contact-info">emmdev@code.com</div>
-            <div class="socials">
-                <i class="fab fa-linkedin"></i>
-                <i class="fab fa-github"></i>
-                <i class="fab fa-twitter"></i>
-            </div>
+       <div class="tv-content">
+        <h2>CONTACTO</h2>
+        <div class="social-icon" onclick="openGitHub()">
+            <i class="fab fa-github"></i>
         </div>
+        <form class="contact-form">
+            <input type="email" placeholder="Tu email" required />
+            <textarea placeholder="Mensaje" required></textarea>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
     `
+    
 }
 };
+
 
 // 6. GESTIÓN DE OBJETOS Y CARGA
 let model, roomMesh;
@@ -149,6 +168,14 @@ function createCSSObject(config, position, quaternion, parentName) {
     // D. Posición y Rotación (Copiadas del Empty de Blender)
     cssObj.position.copy(position);
     cssObj.quaternion.copy(quaternion);
+
+    //DESPLAZAMIENTO ESPECÍFICO PARA EL IPAD 
+    if (parentName === 'Displayipad') {
+    const offset = new THREE.Vector3(-0.06, 0.07, 0); // Ejemplo: -0.3 unidades en X local
+    offset.applyQuaternion(cssObj.quaternion); // Transformamos el offset a la orientación global del objeto
+    cssObj.position.add(offset); // Sumamos el offset a la posición global
+    }
+    // --- Fin del bloque a añadir ---
     
     // E. Escala (Inversa a la densidad para que coincida con el tamaño 3D)
     // Matemáticamente: si el div es 100 veces más grande (por PIXELS_PER_UNIT),
@@ -157,12 +184,37 @@ function createCSSObject(config, position, quaternion, parentName) {
     cssObj.scale.set(scaleFactor, scaleFactor, scaleFactor);
     
     // F. Interactividad (Click en el HTML mueve la cámara)
-    // Agregamos el listener directamente al DOM, ya que el Raycaster no detecta CSS
-    div.addEventListener('pointerdown', (e) => {
-        // Detener propagación para que no interfiera con orbit controls si no es necesario
-        // e.stopPropagation(); 
-        moveToObject(cssObj, config.width); // Pasamos el objeto y su ancho para calcular zoom
-    });
+div.addEventListener('pointerdown', (e) => {
+    // Verificar si el click fue en un elemento interactivo (input, button, .social-icon)
+   if (
+    e.target.tagName === 'INPUT' ||
+    e.target.tagName === 'TEXTAREA' ||
+    e.target.tagName === 'BUTTON' ||
+    e.target.classList.contains('social-icon') ||
+    e.target.classList.contains('project-link') || // <-- Añadimos esta línea
+    e.target.closest('input') ||
+    e.target.closest('textarea') ||
+    e.target.closest('button') ||
+    e.target.closest('.social-icon') ||
+    e.target.closest('.project-link') // <-- Añadimos esta línea
+) {
+    // Si se hizo click en un elemento interactivo, no mover la cámara
+    e.stopPropagation(); // Detener propagación para evitar conflicto
+    return; // Salir de la función
+}
+
+    // Si no fue en un elemento interactivo, mover la cámara
+    moveToObject(cssObj, config.width); // Pasamos el objeto y su ancho para calcular zoom
+});
+
+    // G. Añadir evento para el icono de GitHub (si existe)
+    const githubIcon = div.querySelector('.social-icon');
+    if (githubIcon) {
+        githubIcon.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que se dispare el moveToObject
+            window.open('https://github.com/EmmDevCode', '_blank');
+        });
+    }
 
     // Guardamos referencia para la navbar externa
     cssObj.name = parentName; // Ej: "DisplayMonitor"
@@ -223,6 +275,46 @@ loader.load('assets/Portafolio2.glb', (gltf) => {
         loaderEl.style.opacity = 0;
         setTimeout(() => loaderEl.style.display = 'none', 500);
     }
+
+    // --- AÑADIR LA ANIMACIÓN TYPWRITER AQUÍ ---
+// Aseguramos que el DOM esté completamente cargado
+setTimeout(() => {
+    const el = document.getElementById('typewriter-text');
+
+    if (!el) return;
+
+    const words = ["EMMANUEL", "STUDENT", "PROGRAMMER"];
+    let index = 0;
+    let isDeleting = false;
+    let charIndex = 0;
+
+    function typeLoop() {
+        const word = words[index];
+
+        if (!isDeleting) {
+            // ESCRIBIR
+            el.textContent = word.substring(0, charIndex++);
+            if (charIndex > word.length) {
+                isDeleting = true;
+                setTimeout(typeLoop, 1200); // pausa al terminar palabra
+                return;
+            }
+        } else {
+            // BORRAR
+            el.textContent = word.substring(0, charIndex--);
+            if (charIndex < 0) {
+                isDeleting = false;
+                index = (index + 1) % words.length;
+            }
+        }
+
+        const speed = isDeleting ? 60 : 95;
+
+        gsap.delayedCall(speed / 1000, typeLoop);
+    }
+
+    typeLoop();
+}, 1000);
     
     controls.target.set(0, 1, 0); 
     controls.update();
@@ -238,7 +330,15 @@ function moveToObject(object, objectWidth = 2) {
     // Obtener posición mundial (útil si estuviera agrupado, aunque aquí están en root)
     object.getWorldPosition(targetPos);
     
-    const offset = new THREE.Vector3(0, 0, Math.max(2, objectWidth * 0.8)); // Distancia dinámica según tamaño
+    // --- NUEVO: Definir el offset para mirar desde arriba ---
+    let offset;
+    if (object.name === 'Displayipad') {
+        // Para el iPad, movemos la cámara hacia arriba (eje Y positivo)
+        offset = new THREE.Vector3(0, 0, -3); // Ajusta el valor '3' según sea necesario
+    } else {
+        // Para otros objetos, mantenemos el comportamiento original
+        offset = new THREE.Vector3(0, 0, Math.max(2, objectWidth * 0.8));
+    }
     offset.applyQuaternion(object.getWorldQuaternion(new THREE.Quaternion()));
     
     const camPos = targetPos.clone().add(offset);
