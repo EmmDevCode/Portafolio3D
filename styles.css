@@ -6,7 +6,7 @@
 }
 
 body {
-    overflow: hidden; /* Importante para apps 3D */
+    overflow: hidden;
     font-family: 'Poppins', sans-serif;
     background-color: #1a1a1a;
     transition: background-color 0.5s;
@@ -105,21 +105,19 @@ body.light-mode {
 }
 
 /* --- ESTILOS PARA EL CONTENIDO DENTRO DE LAS PANTALLAS 3D --- */
-/* Estas clases se aplican a los DIVs que Three.js inyecta en la escena */
 
 /* Estilo base compartido para todas las pantallas */
 .screen-base {
-    backface-visibility: hidden; /* Oculta la parte trasera si gira */
+    backface-visibility: hidden; 
     overflow: hidden;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    cursor: pointer; /* Indica que es clickeable */
+    cursor: pointer; 
     transition: box-shadow 0.3s;
-    /* Sombras internas para dar sensación de pantalla */
     box-shadow: inset 0 0 50px rgba(0,0,0,0.5); 
-    user-select: none; /* Evita selección de texto accidental al rotar */
-    pointer-events: auto; /* Asegura que reciba eventos */
+    user-select: none; 
+    pointer-events: auto; 
 }
 
 .screen-base:hover {
@@ -129,15 +127,15 @@ body.light-mode {
 
 /* 1. MONITOR (Sobre Mí) */
 .screen-monitor {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: white;
+    background: linear-gradient(135deg, #000000, #000000, #000000);
+    color: rgb(0, 0, 0);
     justify-content: center;
     align-items: center;
     text-align: center;
 }
 
 .screen-monitor h1 {  
-    color: #00d2ff; 
+    color: #000000; 
     margin-bottom: 0.2em; 
     text-transform: uppercase; 
     letter-spacing: 2px; 
@@ -145,49 +143,43 @@ body.light-mode {
 
 .screen-monitor p { 
     line-height: 1.4; 
-    color: #ccc; 
+    color: #000000; 
 }
 .screen-monitor .highlight { font-weight: bold; 
 }
 
 
-
-
-
-/* 3. PARED (Habilidades) - Estilo tipo "Dashboard Futurista" */
+/* 2. PARED (Habilidades) - Estilo tipo "Dashboard Futurista" */
 .screen-pared {
-    background: rgba(0, 20, 10, 0.9); /* Casi transparente si quieres ver la pared detrás, o solido */
-    color: #00ff88;
+    background: rgba(0, 0, 0, 0.9); 
+    color: #ff0077;
     justify-content: center;
     align-items: flex-start;
     padding: 60px;
-    border: 5px solid rgba(0, 255, 136, 0.3);
+    border: 5px solid rgba(255, 0, 149, 0.3);
 }
-.screen-pared h2 { font-size: 5em; margin-bottom: 40px; text-shadow: 0 0 20px rgba(0,255,136,0.5); }
+.screen-pared h2 { font-size: 5em; margin-bottom: 40px; text-shadow: 0 0 20px rgba(197, 15, 136, 0.5); }
 .skills-container { display: flex; flex-wrap: wrap; gap: 30px; }
 .skill-badge {
-    background: rgba(0, 255, 136, 0.1);
-    border: 2px solid #00ff88;
+    background: rgba(245, 2, 164, 0.1);
+    border: 2px solid #ff0077;
     padding: 15px 30px;
     font-size: 2em;
     border-radius: 50px;
     color: white;
-    box-shadow: 0 0 15px rgba(0,255,136,0.2);
+    box-shadow: 0 0 15px rgba(255, 0, 191, 0.2);
 }
 
-/* 2. IPAD (Proyectos) */
+/* 3. IPAD (Proyectos) */
 .screen-ipad {
-    background: #111;
-    color: white;
+    background: #000000;
+    color: rgb(207, 13, 142);
     border-radius: 29px;
 }
 
 .screen-ipad .ipad-content {
-    /* Rotamos 90 grados en sentido horario para corregir la orientación */
     transform: rotate(-180deg) rotateY(-180deg) scale(0.5) ; 
-    /* Ajustamos el origen de la transformación */
-    transform-origin: center center; /* Mantenemos el centro para que la rotación sea simétrica */
-    /* Aseguramos que el contenido esté centrado después de la rotación */
+    transform-origin: center center; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -195,18 +187,15 @@ body.light-mode {
     width: 100%;
 }
 
-/* Ajustamos el título "Proyectos" para que se vea correctamente después de la rotación */
+
 .screen-ipad h2 {
     font-size: 2em;
-    color: #ff9900;
+    color: rgb(207, 13, 142);
     margin-bottom: 15px;
-    border-bottom: 2px solid #ff9900;
+    border-bottom: 2px solid rgb(207, 13, 142);
     padding-bottom: 10px;
-    /* Aplicamos una rotación inversa para que el título se vea correctamente */
     transform: rotate(-180deg) rotateY(-180deg);
-    /* Ajustamos el origen de la transformación para que el título esté centrado */
     transform-origin: center center;
-    /* Aseguramos que el título esté centrado horizontalmente */
     text-align: center;
 }
 
@@ -225,44 +214,41 @@ body.light-mode {
 }
 
 .project-card {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.212);
     border-radius: 10px;
-    padding: 65px; /* <-- Aumentamos el padding de 15px a 25px */
+    padding: 65px; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    /* Asegura que el contenido interno (el enlace) ocupe todo el espacio */
     overflow: hidden;
 }
 
-.project-card i { font-size: 2.5em; margin-bottom: 10px; color: #ff9900; }
+.project-card i { font-size: 2.5em; margin-bottom: 10px; color: rgb(207, 13, 142); }
 .project-card h3 { font-size: 1em; margin-bottom: 5px; }
 
 
-/* --- AÑADIR ESTAS NUEVAS REGLAS AQUÍ --- */
+
 .screen-ipad .project-link {
-    color: inherit; /* Hereda el color del texto del padre */
-    text-decoration: none; /* Quita el subrayado */
+    color: inherit; 
+    text-decoration: none; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
     height: 100%;
-    /* Opcional: Añadir hover effect */
     transition: transform 0.2s;
 }
 
 .screen-ipad .project-link:hover {
-    transform: scale(1.05); /* Agranda ligeramente al hacer hover */
+    transform: scale(1.05); 
 }
 
-/* TV (Contacto)*/
+/* 4. TV (Contacto)*/
 .screen-tv {
-    background-color: #000;
-    background-image: radial-gradient(circle at center, #330011 0%, #000 100%);
+    background-color: #000000;
     color: #ff3366;
     display: flex;
     flex-direction: column;
@@ -278,7 +264,7 @@ body.light-mode {
 
 /* Rotamos solo el contenido interno */
 .screen-tv .tv-content {
-    transform: rotate(-90deg); /* <-- Elimina esta línea */
+    transform: rotate(-90deg); 
     transform-origin: center center;
     width: 100%;
     height: 100%;
@@ -290,18 +276,18 @@ body.light-mode {
     pointer-events: auto;
 }
 
-/* Separar el título de los iconos o formulario */
+
 .screen-tv h2 {
     font-size: 3.5em;
     font-family: 'Courier New', monospace;
     border-bottom: 4px solid #ff3366;
     padding-bottom: 10px;
     margin: 0;
-    margin-bottom: 40px; /* Separar del siguiente elemento */
+    margin-bottom: 40px; 
     pointer-events: none;
 }
 
-/* Estilo del icono de GitHub */
+
 .screen-tv .social-icon {
     display: inline-block;
     font-size: 4em;
@@ -316,7 +302,7 @@ body.light-mode {
     transform: scale(1.1);
 }
 
-/* Opcional: Estilo del formulario */
+
 .screen-tv .contact-form {
     display: flex;
     flex-direction: column;

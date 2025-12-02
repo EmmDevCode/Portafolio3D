@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portafolio 3D Interactivo</title>
+    <title>My portfolio EmmDevCode</title>
     
     <!-- Hoja de Estilos -->
     <link rel="stylesheet" href="styles.css">
     
     <!-- Iconos (FontAwesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <!-- GSAP para animaciones -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -21,7 +21,7 @@
     gsap.registerPlugin(TextPlugin);
 </script>
 
-    <!-- IMPORT MAP: Three.js + CSS3DRenderer -->
+    <!-- IMPORTS -->
     <script type="importmap">
         {
             "imports": {
@@ -36,7 +36,7 @@
     <!-- Pantalla de Carga -->
     <div id="loading-screen">
         <div class="loader"></div>
-        <p>Cargando Experiencia 3D...</p>
+        <p>My Portfolio</p>
     </div>
 
     <!-- Botón Modo Oscuro/Claro -->
@@ -44,14 +44,14 @@
         <i class="fas fa-sun"></i>
     </div>
 
-    <!-- Instrucciones -->
+
     <div class="instructions">
         <p><i class="fas fa-mouse"></i> Click en pantallas para navegar</p>
     </div>
 
-    <!-- Barra de Navegación (Flotante) -->
+    <!-- Barra de Navegación-->
     <div class="nav-bar">
-        <!-- Los IDs data-target coinciden con las claves en three.js -->
+
         <div class="nav-item" data-target="DisplayMonitor" title="Sobre Mí">
             <i class="fas fa-user"></i>
         </div>
@@ -73,8 +73,8 @@
     <div id="canvas-container"></div>
 
     <!-- SCRIPTS -->
-    <script src="script.js"></script> <!-- Asegúrate que este archivo contiene la lógica de la animación typewriter -->
-    <script type="module" src="three.js"></script> <!-- Asegúrate que este archivo carga la escena 3D -->
+    <script src="script.js"></script> 
+    <script type="module" src="three.js"></script> 
 
 </body>
 </html>

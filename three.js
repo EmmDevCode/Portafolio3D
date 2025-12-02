@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// IMPORTANTE: Importamos el renderizador CSS3D
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 // 1. CONFIGURACIÓN INICIAL DE ESCENA
@@ -9,7 +8,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a1a);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(5, 5, 8);
+camera.position.set(0, 12, 15);
 
 // 2. CONFIGURACIÓN DE RENDERIZADORES
 const container = document.getElementById('canvas-container');
@@ -35,7 +34,7 @@ cssRenderer.domElement.style.zIndex = 2; // Encima para recibir clicks
 cssRenderer.domElement.style.pointerEvents = 'all';
 container.appendChild(cssRenderer.domElement);
 
-// 3. CONTROLES (OrbitControls debe controlar el elemento superior, el CSS Renderer)
+// 3. CONTROLES 
 const controls = new OrbitControls(camera, cssRenderer.domElement);
 controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 1.9;
@@ -49,9 +48,7 @@ dirLight.position.set(5, 10, 7);
 dirLight.castShadow = true;
 scene.add(dirLight);
 
-// 5. CONFIGURACIÓN DE PANTALLAS (TUS DATOS + HTML)
-// "pixelsPerUnit" define la calidad. 100px por cada 1 unidad de Three.js.
-// Si tu pared mide 14 unidades, tendrá 1400px de ancho en HTML.
+// 5. CONFIGURACIÓN DE PANTALLAS (DATOS + HTML)
 const PIXELS_PER_UNIT = 120; 
 
 
@@ -62,9 +59,9 @@ const screenConfig = {
         cssClass: 'screen-monitor',
         html: `
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; padding: 10px;">
-                <img src="assets/perfil.png" alt="Foto de Emmanuel" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid #00d2ff;">
+                <img src="assets/perfil.png" alt="Foto de Emmanuel" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid #ffffffff;">
                 <!-- Contenedor para la animación typewriter -->
-                <div id="typewriter-container" style="font-size: 2em; color: #00d2ff; margin-bottom: 0.1em; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold;">
+                <div id="typewriter-container" style="font-size: 2em; color: #ffffffff; margin-bottom: 0.1em; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold;">
                     Hi, I AM <span id="typewriter-text">EMMANUEL</span>
                 </div>
                 <p style="font-size: 1em; margin-top: 10px; max-width: 85%; line-height: 1.3; color: #ccc;">
@@ -113,19 +110,18 @@ const screenConfig = {
                 <h2>Habilidades Técnicas</h2>
                 <div class="skills-container">
                     <div class="skill-badge"><i class="fab fa-js"></i> JavaScript</div>
-                    <div class="skill-badge"><i class="fas fa-cube"></i> Three.js</div>
+                    <div class="skill-badge"><i class="fab fa-flutter"></i> Flutter</div>
                     <div class="skill-badge"><i class="fab fa-react"></i> React</div>
                     <div class="skill-badge"><i class="fas fa-shapes"></i> Blender</div>
                     <div class="skill-badge"><i class="fab fa-html5"></i> HTML5/CSS3</div>
-                    <div class="skill-badge"><i class="fas fa-server"></i> Node.js</div>
                 </div>
             </div>
         `
     },
 
     'Displaytv': { 
-    width: 3.4,   // Ancho real de la pantalla en 3D
-    height: 7.7,  // Alto real de la pantalla en 3D
+    width: 3.4,  
+    height: 7.7,  
     cssClass: 'screen-tv',
     html: `
        <div class="tv-content">
@@ -171,15 +167,11 @@ function createCSSObject(config, position, quaternion, parentName) {
 
     //DESPLAZAMIENTO ESPECÍFICO PARA EL IPAD 
     if (parentName === 'Displayipad') {
-    const offset = new THREE.Vector3(-0.06, 0.07, 0); // Ejemplo: -0.3 unidades en X local
-    offset.applyQuaternion(cssObj.quaternion); // Transformamos el offset a la orientación global del objeto
-    cssObj.position.add(offset); // Sumamos el offset a la posición global
+    const offset = new THREE.Vector3(-0.06, 0.07, 0); 
+    offset.applyQuaternion(cssObj.quaternion); 
+    cssObj.position.add(offset); 
     }
-    // --- Fin del bloque a añadir ---
-    
-    // E. Escala (Inversa a la densidad para que coincida con el tamaño 3D)
-    // Matemáticamente: si el div es 100 veces más grande (por PIXELS_PER_UNIT),
-    // reducimos la escala 100 veces.
+
     const scaleFactor = 1 / PIXELS_PER_UNIT;
     cssObj.scale.set(scaleFactor, scaleFactor, scaleFactor);
     
@@ -191,23 +183,23 @@ div.addEventListener('pointerdown', (e) => {
     e.target.tagName === 'TEXTAREA' ||
     e.target.tagName === 'BUTTON' ||
     e.target.classList.contains('social-icon') ||
-    e.target.classList.contains('project-link') || // <-- Añadimos esta línea
+    e.target.classList.contains('project-link') || 
     e.target.closest('input') ||
     e.target.closest('textarea') ||
     e.target.closest('button') ||
     e.target.closest('.social-icon') ||
-    e.target.closest('.project-link') // <-- Añadimos esta línea
+    e.target.closest('.project-link') 
 ) {
-    // Si se hizo click en un elemento interactivo, no mover la cámara
-    e.stopPropagation(); // Detener propagación para evitar conflicto
-    return; // Salir de la función
+    
+    e.stopPropagation(); 
+    return; 
 }
 
     // Si no fue en un elemento interactivo, mover la cámara
-    moveToObject(cssObj, config.width); // Pasamos el objeto y su ancho para calcular zoom
+    moveToObject(cssObj, config.width); 
 });
 
-    // G. Añadir evento para el icono de GitHub (si existe)
+    
     const githubIcon = div.querySelector('.social-icon');
     if (githubIcon) {
         githubIcon.addEventListener('click', (e) => {
@@ -216,8 +208,8 @@ div.addEventListener('pointerdown', (e) => {
         });
     }
 
-    // Guardamos referencia para la navbar externa
-    cssObj.name = parentName; // Ej: "DisplayMonitor"
+    
+    cssObj.name = parentName; 
     clickableObjects.push(cssObj);
 
     return cssObj;
@@ -244,23 +236,23 @@ loader.load('assets/Portafolio2.glb', (gltf) => {
             "tv-empty": "Displaytv"
         };
 
-        // Verificar si es uno de nuestros empties
+        // Verificar si es un empties
         for (const [emptyName, configKey] of Object.entries(emptyToKey)) {
             if (child.name === emptyName || child.name.includes(emptyName)) {
                 const config = screenConfig[configKey];
                 if (config) {
-                    // Crear la pantalla CSS3D en la posición del empty
+                    // Crea la pantalla CSS3D en la posición del empty
                     const cssScreen = createCSSObject(
                         config, 
                         child.position, 
                         child.quaternion,
-                        configKey // Pasamos la clave como nombre (DisplayMonitor)
+                        configKey // Pasam la clave como nombre (DisplayMonitor)
                     );
                     
-                    // Añadimos a la escena
+                    // Añadir a la escena
                     scene.add(cssScreen);
                     
-                    // Opcional: Ocultar el empty original si tenía geometría (visibilidad)
+                    
                     child.visible = false; 
                 }
             }
@@ -277,7 +269,7 @@ loader.load('assets/Portafolio2.glb', (gltf) => {
     }
 
     // --- AÑADIR LA ANIMACIÓN TYPWRITER AQUÍ ---
-// Aseguramos que el DOM esté completamente cargado
+
 setTimeout(() => {
     const el = document.getElementById('typewriter-text');
 
@@ -327,14 +319,13 @@ setTimeout(() => {
 // 7. LÓGICA DE MOVIMIENTO DE CÁMARA
 function moveToObject(object, objectWidth = 2) {
     const targetPos = new THREE.Vector3();
-    // Obtener posición mundial (útil si estuviera agrupado, aunque aquí están en root)
+    // Obtener posición global 
     object.getWorldPosition(targetPos);
     
-    // --- NUEVO: Definir el offset para mirar desde arriba ---
+    // Definir el offset para mirar desde arriba 
     let offset;
     if (object.name === 'Displayipad') {
-        // Para el iPad, movemos la cámara hacia arriba (eje Y positivo)
-        offset = new THREE.Vector3(0, 0, -3); // Ajusta el valor '3' según sea necesario
+        offset = new THREE.Vector3(0, 0, -3); 
     } else {
         // Para otros objetos, mantenemos el comportamiento original
         offset = new THREE.Vector3(0, 0, Math.max(2, objectWidth * 0.8));
@@ -370,11 +361,10 @@ function resetCamera() {
 // 8. EVENTOS EXTERNOS
 window.addEventListener('navigateToSection', (e) => {
     const targetName = e.detail.target;
-    // Buscamos en nuestros objetos CSS creados
+   
     const targetObj = clickableObjects.find(obj => obj.name === targetName);
     
     if(targetObj) {
-        // Necesitamos el ancho para calcular el zoom, lo sacamos del config
         const width = screenConfig[targetName]?.width || 2;
         moveToObject(targetObj, width);
     }
