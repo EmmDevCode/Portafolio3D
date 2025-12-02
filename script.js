@@ -1,57 +1,96 @@
 // --- SCRIPT PARA LÓGICA DE INTERFAZ (UI) ---
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 1. ANIMACIÓN DE INTRODUCCIÓN (GSAP) ---
+    const tl = gsap.timeline();
+
+    tl.to(".loader-text", {
+        duration: 1.5,
+        opacity: 1,
+        y: 0,
+        ease: "power3.out" // Entrada suave
+    })
+    .to(".loader-text", {
+        duration: 0.5,
+        opacity: 0,
+        y: -20, // El texto sube un poco al desaparecer
+        ease: "power2.in",
+        delay: 0.8 // TIEMPO DE ESPERA
+    })
+    .to("#loading-screen", {
+        duration: 1.2,
+        yPercent: -100, // Desliza todo el div hacia arriba
+        ease: "expo.inOut", // Efecto "swish" profesional
+        onComplete: () => {
+            // Opcional: eliminar del DOM para limpiar
+            const loader = document.getElementById('loading-screen');
+            if(loader) loader.style.display = 'none';
+        }
+    }, "-=0.1");
     
-    // 1. Manejo del Tema (Oscuro/Claro)
+    
+    // --- 2. LÓGICA DE TEMA INTELIGENTE (Auto-Theme) ---
     const themeBtn = document.getElementById('theme-btn');
     const icon = themeBtn.querySelector('i');
-    
-    themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-        
-        // Cambiar icono
-        if (document.body.classList.contains('light-mode')) {
-            icon.classList.replace('fa-sun', 'fa-moon');
+
+    // Función Centralizada para aplicar temas
+    function setTheme(isLightMode) {
+        if (isLightMode) {
+            document.body.classList.add('light-mode');
+            icon.classList.replace('fa-sun', 'fa-moon'); // Icono Luna
         } else {
-            icon.classList.replace('fa-moon', 'fa-sun');
+            document.body.classList.remove('light-mode');
+            icon.classList.replace('fa-moon', 'fa-sun'); // Icono Sol
         }
 
-        // Despachar evento personalizado para que Three.js se entere
-        const event = new CustomEvent('themeChanged', { 
-            detail: { isLightMode: document.body.classList.contains('light-mode') } 
-        });
-        window.dispatchEvent(event);
+        // Avisar a Three.js del cambio
+        window.dispatchEvent(new CustomEvent('themeChanged', { 
+            detail: { isLightMode: isLightMode } 
+        }));
+    }
+
+    // Determinar estado inicial basado en la hora
+    const hour = new Date().getHours();
+    // Consideramos "Día" entre las 6:00 AM y las 6:00 PM
+    const isDayTime = hour >= 6 && hour < 18;
+    
+    // Aplicar el tema inicial inmediatamente
+    setTheme(isDayTime);
+
+    // Listener del botón (Toggle manual)
+    themeBtn.addEventListener('click', () => {
+        const currentIsLight = document.body.classList.contains('light-mode');
+        setTheme(!currentIsLight);
     });
 
-    // 2. Botones de cierre en modales
+
+    // --- 3. BOTONES DE CIERRE (MODALES) ---
     document.querySelectorAll('.close-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            // Ocultar todos los modales
             document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            
-            // Avisar a Three.js que regrese la cámara
             window.dispatchEvent(new Event('resetViewRequest'));
         });
     });
 
-    // 3. Botones de la barra de navegación
+
+    // --- 4. BARRA DE NAVEGACIÓN ---
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
             const target = item.getAttribute('data-target');
-            
             if (target) {
-                // Disparar evento para que Three.js mueva la cámara
-                const event = new CustomEvent('navigateToSection', { detail: { target: target } });
-                window.dispatchEvent(event);
+                window.dispatchEvent(new CustomEvent('navigateToSection', { detail: { target: target } }));
             } else if (item.id === 'reset-view-btn') {
                 window.dispatchEvent(new Event('resetViewRequest'));
             }
         });
     });
 
-});
+}); // <--- Aquí termina el DOMContentLoaded. ¡No pongas más lógica de eventos debajo!
 
-// Función auxiliar global para mostrar el contenido HTML (llamada desde Three.js)
+
+// --- FUNCIONES GLOBALES (Accesibles desde Three.js) ---
+
 window.showHtmlContent = (contentId) => {
     document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
     const el = document.getElementById(contentId);
@@ -61,4 +100,3 @@ window.showHtmlContent = (contentId) => {
 window.hideHtmlContent = () => {
     document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
 };
-

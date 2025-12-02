@@ -20,28 +20,28 @@ body.light-mode {
 /* --- UI ELEMENTS (Overlay) --- */
 #loading-screen {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: #000;
-    color: #fff;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100vh;
+    background-color: #000000; /* Negro puro */
+    z-index: 9999;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s;
+    overflow: hidden; /* Necesario para que no se vea scroll al animar */
 }
 
-.loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #00d2ff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
+.loader-text {
+    font-family: 'Poppins', sans-serif; /* Tu fuente actual */
+    font-size: 2.5rem; /* Tamaño legible pero no gigante */
+    font-weight: 300; /* Ligero (Light) se ve más elegante que Bold */
+    color: #ffffff;
+    letter-spacing: 10px; /* Mucho espaciado para toque 'cine' */
+    text-transform: uppercase;
+    opacity: 0; /* Empieza invisible */
+    transform: translateY(30px); /* Empieza un poco abajo */
 }
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .theme-toggle {
     position: absolute;
@@ -59,6 +59,7 @@ body.light-mode {
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255,255,255,0.2);
     color: white;
+    transition: all 0.5s ease;
 }
 .light-mode .theme-toggle { color: #333; border-color: rgba(0,0,0,0.1); }
 
@@ -339,3 +340,4 @@ body.light-mode {
 .screen-tv .contact-form button:hover {
     background-color: #ff6699;
 }
+
