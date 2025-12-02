@@ -372,12 +372,26 @@ window.addEventListener('navigateToSection', (e) => {
 
 window.addEventListener('resetViewRequest', resetCamera);
 
+
+// renderizar bien en dispositivos moviles
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    
+    camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    cssRenderer.setSize(window.innerWidth, window.innerHeight);
+
+    
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    if (cssRenderer) {
+        cssRenderer.setSize(sizes.width, sizes.height);
+    }
 });
+
 
 window.addEventListener('themeChanged', (e) => {
     const isLight = e.detail.isLightMode;

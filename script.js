@@ -14,23 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
     .to(".loader-text", {
         duration: 0.5,
         opacity: 0,
-        y: -20, // El texto sube un poco al desaparecer
+        y: -20, 
         ease: "power2.in",
-        delay: 0.8 // TIEMPO DE ESPERA
+        delay: 0.8 
     })
     .to("#loading-screen", {
         duration: 1.2,
-        yPercent: -100, // Desliza todo el div hacia arriba
-        ease: "expo.inOut", // Efecto "swish" profesional
+        yPercent: -100, 
+        ease: "expo.inOut", 
         onComplete: () => {
-            // Opcional: eliminar del DOM para limpiar
+            
             const loader = document.getElementById('loading-screen');
             if(loader) loader.style.display = 'none';
         }
     }, "-=0.1");
     
     
-    // --- 2. LÓGICA DE TEMA INTELIGENTE (Auto-Theme) ---
+    // --- 2. (Auto-Theme) ---
     const themeBtn = document.getElementById('theme-btn');
     const icon = themeBtn.querySelector('i');
 
@@ -50,9 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
     }
 
-    // Determinar estado inicial basado en la hora
+    
     const hour = new Date().getHours();
-    // Consideramos "Día" entre las 6:00 AM y las 6:00 PM
+    // "Día" entre las 6:00 AM y las 6:00 PM
     const isDayTime = hour >= 6 && hour < 18;
     
     // Aplicar el tema inicial inmediatamente
@@ -86,10 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-}); // <--- Aquí termina el DOMContentLoaded. ¡No pongas más lógica de eventos debajo!
+}); 
 
 
-// --- FUNCIONES GLOBALES (Accesibles desde Three.js) ---
 
 window.showHtmlContent = (contentId) => {
     document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));

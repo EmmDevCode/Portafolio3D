@@ -341,3 +341,129 @@ body.light-mode {
     background-color: #ff6699;
 }
 
+/* =========================================
+   DISEÑO RESPONSIVO (Mobile & Tablet)
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* --- UI ELEMENTS (Overlay) --- */
+    
+    .nav-bar {
+        flex-direction: row; 
+        left: 50%;
+        top: auto;
+        bottom: 20px; 
+        transform: translateX(-50%);
+        width: 90%;
+        justify-content: space-around;
+        padding: 10px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .nav-item {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9em;
+    }
+
+    
+    .theme-toggle {
+        top: 15px;
+        right: 15px;
+        width: 35px;
+        height: 35px;
+    }
+
+    .instructions {
+        bottom: 90px; 
+        font-size: 0.8em;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- CONTENIDO INTERNO DE PANTALLAS 3D --- */
+
+
+    /* 1. MONITOR (Sobre Mí) */
+    .screen-monitor {
+        padding: 10px;
+    }
+    .screen-monitor h1 {
+        font-size: 1.5em; 
+        letter-spacing: 1px;
+    }
+    .screen-monitor p {
+        font-size: 0.8em; 
+    }
+
+    /* 2. PARED (Habilidades) */
+    .screen-pared {
+        padding: 20px; 
+    }
+    .screen-pared h2 {
+        font-size: 2.5em; 
+        margin-bottom: 20px;
+    }
+    .skills-container {
+        gap: 10px;
+        justify-content: center;
+    }
+    .skill-badge {
+        font-size: 1em; 
+        padding: 8px 15px;
+        border-width: 1px;
+    }
+
+    /* 3. IPAD (Proyectos) */
+    .screen-ipad .project-grid {
+        grid-template-columns: 1fr; 
+        gap: 10px;
+        overflow-y: auto; 
+    }
+    
+    .project-card {
+        padding: 15px; 
+        flex-direction: row; 
+        gap: 15px;
+        text-align: left;
+    }
+    
+    .project-card i {
+        font-size: 1.5em;
+        margin-bottom: 0;
+    }
+    
+    .screen-ipad h2 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    /* 4. TV (Contacto) */
+    .screen-tv {
+        padding: 10px;
+    }
+    .screen-tv h2 {
+        font-size: 1.8em; /* Reducir de 3.5em */
+        margin-bottom: 20px;
+    }
+    .screen-tv .social-icon {
+        font-size: 2em; /* Reducir iconos gigantes */
+        margin-bottom: 20px;
+    }
+    .screen-tv .contact-form {
+        width: 100%;
+    }
+    .screen-tv .contact-form input,
+    .screen-tv .contact-form textarea {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+}
+
+/* Pequeño ajuste para pantallas muy pequeñas (iPhone SE, etc) */
+@media screen and (max-width: 380px) {
+    .nav-item { width: 35px; height: 35px; }
+    .screen-pared h2 { font-size: 1.8em; }
+}
