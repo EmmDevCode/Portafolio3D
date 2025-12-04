@@ -2,7 +2,7 @@
 
 </p>
 
-## What languages ​​does it use??
+## 🤔 What languages ​​does it use?
 <p align="center">
 
 This project uses HTML, combined with JavaScript and CSS.
