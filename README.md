@@ -82,8 +82,5 @@ Portfolio_3D/
 
 * Theme Toggle: Click the Sun/Moon icon in the top right to switch between Day (Light) and Night (Dark) modes. This changes the room's lighting and materials in real-time!
 
-## 🎬 DEMO
-
-![WEB Demo GIF](./Demo/Demo.gif)
 
 
