@@ -84,6 +84,6 @@ Portfolio_3D/
 
 ## 🎬 DEMO
 
-![WEB Demo GIF](./demo/Demo.mp4)
+![WEB Demo GIF](./Demo/Demo.mp4)
 
 
